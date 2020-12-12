@@ -1,9 +1,23 @@
+/* Mingye Chen 2020-12-12
+ * To do: Add LED strip feature
+ * Gets Github commit activity data and displays it on an LED Dashboard
+ */
+
 #include <WiFi.h>
 #include <HTTPClient.h>
+#include <NTPClient.h>
+#include <WiFiUdp.h>
 #include "credentials.h"
+
+// Define NTP Client to get time
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP);
+int hour, minutes;
+
+//WIFI information from credentials.h
 const char* ssid = mySSID;
 const char* password =  myPASSWORD;
-//api urls for last week and the current week
+//api urls for last week and the current week from credentials.h
 const char * thisweek = GITHUB_PROFILE_LINK_1;
 const char * lastweek = GITHUB_PROFILE_LINK_2;
 int githubActivity[14];
@@ -107,20 +121,31 @@ void setup() {
   }
  
   Serial.println("Connected to the WiFi network");
- 
+
+  timeClient.begin();
+  // GMT to EST 5hour offset
+  timeClient.setTimeOffset(-18000);
+  hour = timeClient.getHours();
 }
  
 void loop() {
  
   if ((WiFi.status() == WL_CONNECTED)) { //Check the current connection status
-  
-    getGithubActivity(thisweek);
-    getGithubActivity(lastweek);
-    for(int i = 0; i < 14; i++){
-      Serial.print("data: "); Serial.println(githubActivity[i]); 
+    timeClient.update();
+    // Checks if an hour has passed
+    if(hour != timeClient.getHours()){
+      hour = timeClient.getHours();
+      getGithubActivity(thisweek);
+      getGithubActivity(lastweek);
+      for(int i = 0; i < 14; i++){
+        Serial.print("data: "); Serial.println(githubActivity[i]); 
+      }
+    }
+    else{
+      // Set a delay until the next hour
+      long delayUntilNextHour = 60000*(60 - timeClient.getMinutes());
+      Serial.print("Delay set for "); Serial.println(delayUntilNextHour);
+      delay(delayUntilNextHour);
     }
   }
- 
-  delay(10000);
- 
 }
