@@ -1,13 +1,17 @@
-/* Mingye Chen 2020-12-12
- * To do: Add LED strip feature
+/* Mingye Chen 2020-12-14
  * Gets Github commit activity data and displays it on an LED Dashboard
  */
 
+#include <FastLED.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <NTPClient.h>
 #include <WiFiUdp.h>
 #include "credentials.h"
+
+#define LED_PIN 27
+#define NUM_LEDS 14
+CRGB dashboard[NUM_LEDS];
 
 // Define NTP Client to get time
 WiFiUDP ntpUDP;
@@ -103,14 +107,16 @@ void getGithubActivity(const char * url){
     }
     // This Week's activity
     else {
-      for(int i = 7; i < 14; i++){
-        githubActivity[i] = activityData[i-7];
+      int k = 0;
+      for(int i = 13; i > 6; i--){
+        githubActivity[i] = activityData[k];
+        k++;
       }
     }
 }
 
 void setup() {
-  
+  FastLED.addLeds<WS2812, LED_PIN, GRB>(dashboard, NUM_LEDS);
   Serial.begin(115200);
   delay(4000);
   WiFi.begin(ssid, password);
@@ -138,8 +144,13 @@ void loop() {
       getGithubActivity(thisweek);
       getGithubActivity(lastweek);
       for(int i = 0; i < 14; i++){
-        Serial.print("data: "); Serial.println(githubActivity[i]); 
+        Serial.print("data: "); Serial.print(githubActivity[i]); 
+        if(githubActivity[i] > 10) githubActivity[i] = 10;
+        int ledBrightness = map(githubActivity[i], 0, 10, 0, 255);
+        Serial.print("|| led data: "); Serial.println(ledBrightness);
+        dashboard[i] = CRGB (0, ledBrightness, 0);
       }
+      FastLED.show();
     }
     else{
       // Set a delay until the next hour
