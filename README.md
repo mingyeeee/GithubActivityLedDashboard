@@ -8,7 +8,10 @@ WS2811 LED strips are used for indicating github activity.
 
 ## ThinkSpeak API setup
 To get the github commit activity, ThingSpeak API is used to webscrape the data from the github profile using an xpath. 
-URL: 	https://github.com/users/<YOUR USERNAME>/contributions?to=<CURRENT YEAR>
-Parse String: 	/html/body/div/div/div/div[1]/svg/g/g[52]
-and             /html/body/div/div/div/div[1]/svg/g/g[53]
+
+* URL: 	https://github.com/users/YOUR_USERNAME/contributions?to=CURRENT_YEAR
+
+Parse String (Xpath): 	
+1. /html/body/div/div/div/div[1]/svg/g/g[52]
+2. /html/body/div/div/div/div[1]/svg/g/g[53]
 
