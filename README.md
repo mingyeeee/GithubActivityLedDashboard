@@ -6,6 +6,8 @@ The dashboard shows 2 weeks worth of Github activity using LEDs to indicate acti
 An ESP32 is used to get the github activity information from a ThinkSpeak API. It also controls the LEDs for the dashboard.
 WS2811 LED strips are used for indicating github activity.
 
+Pin 27 -> ledstrip data line
+
 ## ThinkSpeak API setup
 To get the github commit activity, ThingSpeak API is used to webscrape the data from the github profile using an xpath. 
 
@@ -15,3 +17,4 @@ Parse String (Xpath):
 1. /html/body/div/div/div/div[1]/svg/g/g[52]
 2. /html/body/div/div/div/div[1]/svg/g/g[53]
 
+![ThinkSpeakAPIexample](/images/thingspeakApiExample.png)
